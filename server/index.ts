@@ -1,17 +1,17 @@
-import express from 'express'
-import cors from 'cors'
-import { PrismaClient } from '@prisma/client'
+const express = require('express')
+const cors = require('cors')
+const { PrismaClient } = require('@prisma/client')
 
 const app = express()
 const prisma = new PrismaClient()
-const PORT = 3001
+const PORT = 4000
 
 // Middleware
 app.use(cors())
 app.use(express.json())
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (req: any, res:any) => {
   res.json({ status: 'Server is running' })
 })
 
