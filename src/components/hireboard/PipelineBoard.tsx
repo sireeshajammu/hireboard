@@ -1,9 +1,17 @@
 'use client'
-import React from 'react'
-import { useCandidateStore } from '../../store/candidateStore'
+import React, { useState, useEffect } from 'react'
 import { CandidateCard } from './CandidateCard'
+import { CandidateModal } from './CandidateModal'
 
 type Stage = 'applied' | 'screened' | 'interviewed' | 'offered' | 'rejected'
+
+interface Candidate {
+  id: string
+  name: string
+  email: string
+  role: string
+  stage: Stage
+}
 
 const stages: { id: Stage; label: string; color: string }[] = [
   { id: 'applied', label: 'Applied', color: 'border-t-blue-400' },
@@ -14,7 +22,43 @@ const stages: { id: Stage; label: string; color: string }[] = [
 ]
 
 export const PipelineBoard = () => {
-  const { candidates, moveCandidate } = useCandidateStore()
+  const [candidates, setCandidates] = useState<Candidate[]>([])
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  // Fetch candidates from API on mount
+  useEffect(() => {
+    fetchCandidates()
+  }, [])
+
+  const fetchCandidates = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/api/candidates')
+      const data = await response.json()
+      setCandidates(data)
+    } catch (error) {
+      console.error('Failed to fetch candidates:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Update candidate stage in API
+  const moveCandidate = async (candidateId: string, newStage: Stage) => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/candidates/${candidateId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stage: newStage })
+      })
+      const updatedCandidate = await response.json()
+      
+      // Update local state
+      setCandidates(candidates.map(c => c.id === candidateId ? { ...c, stage: newStage } : c))
+    } catch (error) {
+      console.error('Failed to update candidate:', error)
+    }
+  }
 
   const handleDragStart = (e: React.DragEvent, candidateId: string) => {
     e.dataTransfer.setData('candidateId', candidateId)
@@ -30,12 +74,14 @@ export const PipelineBoard = () => {
     e.preventDefault()
   }
 
+  if (loading) return <div className="p-6">Loading...</div>
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Recruitment Pipeline</h1>
         <p className="text-sm text-gray-500 mt-1">
-          {candidates.length} candidates · drag to move between stages
+          {candidates.length} candidates · drag to move between stages · click to view details
         </p>
       </div>
 
@@ -73,6 +119,7 @@ export const PipelineBoard = () => {
                       role={candidate.role}
                       email={candidate.email}
                       stage={candidate.stage}
+                      onClick={() => setSelectedCandidate(candidate)}
                     />
                   </div>
                 ))}
@@ -87,6 +134,12 @@ export const PipelineBoard = () => {
           )
         })}
       </div>
+
+      <CandidateModal
+        candidate={selectedCandidate}
+        open={!!selectedCandidate}
+        onClose={() => setSelectedCandidate(null)}
+      />
     </div>
   )
 }
