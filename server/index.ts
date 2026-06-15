@@ -1,37 +1,32 @@
-const exp = require('express')
+const express = require('express')
+const cors = require('cors')
 const { PrismaClient } = require('@prisma/client')
 
-const router = exp.Router()
-const db = new PrismaClient()
+const app = express()
+const prisma = new PrismaClient()
+const PORT = 4000
+
+app.use(cors())
+app.use(express.json())
+
+app.get('/health', (req: any, res: any) => {
+  res.json({ status: 'Server is running' })
+})
 
 // GET all candidates
-router.get('/', async (req: any, res: any) => {
+app.get('/api/candidates', async (req: any, res: any) => {
   try {
-    const candidates = await db.candidate.findMany()
+    const candidates = await prisma.candidate.findMany()
     res.json(candidates)
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch candidates' })
   }
 })
 
-// GET single candidate
-router.get('/:id', async (req: any, res: any) => {
-  try {
-    const candidate = await db.candidate.findUnique({
-      where: { id: req.params.id }
-    })
-    res.json(candidate)
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch candidate' })
-  }
-})
-
 // CREATE candidate
-router.post('/', async (req: any, res: any) => {
+app.post('/api/candidates', async (req: any, res: any) => {
   try {
-    const candidate = await db.candidate.create({
-      data: req.body
-    })
+    const candidate = await prisma.candidate.create({ data: req.body })
     res.json(candidate)
   } catch (error) {
     res.status(500).json({ error: 'Failed to create candidate' })
@@ -39,9 +34,9 @@ router.post('/', async (req: any, res: any) => {
 })
 
 // UPDATE candidate
-router.put('/:id', async (req: any, res: any) => {
+app.put('/api/candidates/:id', async (req: any, res: any) => {
   try {
-    const candidate = await db.candidate.update({
+    const candidate = await prisma.candidate.update({
       where: { id: req.params.id },
       data: req.body
     })
@@ -52,15 +47,15 @@ router.put('/:id', async (req: any, res: any) => {
 })
 
 // DELETE candidate
-router.delete('/:id', async (req: any, res: any) => {
+app.delete('/api/candidates/:id', async (req: any, res: any) => {
   try {
-    await db.candidate.delete({
-      where: { id: req.params.id }
-    })
+    await prisma.candidate.delete({ where: { id: req.params.id } })
     res.json({ message: 'Candidate deleted' })
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete candidate' })
   }
 })
 
-module.exports = router
+app.listen(PORT, () => {
+  console.log(`✓ Server running on http://localhost:${PORT}`)
+})
