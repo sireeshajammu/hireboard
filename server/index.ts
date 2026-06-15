@@ -1,21 +1,66 @@
-const express = require('express')
-const cors = require('cors')
+const exp = require('express')
 const { PrismaClient } = require('@prisma/client')
 
-const app = express()
-const prisma = new PrismaClient()
-const PORT = 4000
+const router = exp.Router()
+const db = new PrismaClient()
 
-// Middleware
-app.use(cors())
-app.use(express.json())
-
-// Health check
-app.get('/health', (req: any, res:any) => {
-  res.json({ status: 'Server is running' })
+// GET all candidates
+router.get('/', async (req: any, res: any) => {
+  try {
+    const candidates = await db.candidate.findMany()
+    res.json(candidates)
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch candidates' })
+  }
 })
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`✓ Server running on http://localhost:${PORT}`)
+// GET single candidate
+router.get('/:id', async (req: any, res: any) => {
+  try {
+    const candidate = await db.candidate.findUnique({
+      where: { id: req.params.id }
+    })
+    res.json(candidate)
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch candidate' })
+  }
 })
+
+// CREATE candidate
+router.post('/', async (req: any, res: any) => {
+  try {
+    const candidate = await db.candidate.create({
+      data: req.body
+    })
+    res.json(candidate)
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create candidate' })
+  }
+})
+
+// UPDATE candidate
+router.put('/:id', async (req: any, res: any) => {
+  try {
+    const candidate = await db.candidate.update({
+      where: { id: req.params.id },
+      data: req.body
+    })
+    res.json(candidate)
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update candidate' })
+  }
+})
+
+// DELETE candidate
+router.delete('/:id', async (req: any, res: any) => {
+  try {
+    await db.candidate.delete({
+      where: { id: req.params.id }
+    })
+    res.json({ message: 'Candidate deleted' })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete candidate' })
+  }
+})
+
+module.exports = router
