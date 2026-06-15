@@ -1,47 +1,85 @@
-// This tells Prisma we're using PostgreSQL
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// This generates the Prisma client we'll use in our code
 generator client {
   provider = "prisma-client-js"
 }
 
-// The Candidate table — stores recruiter pipeline data
-model Candidate {
-  // Unique ID for each candidate (auto-generated)
+// Recruiter/Hiring Manager
+model User {
   id        String   @id @default(cuid())
-  
-  // Basic info
   name      String
-  email     String   @unique  // No duplicate emails
-  role      String   // Job title they applied for
-  
-  // Tech skills as a comma-separated string
-  // @db.Text allows longer text than String
-  techStack String?  @db.Text  // ? means optional
-  
-  // Years of experience (nullable, some candidates may not provide)
-  yearsOfExperience Int?
-  
-  // Recruiter notes about this candidate
-  notes     String?  @db.Text
-  
-  // Pipeline stage — one of these values only
-  stage     Stage    @default(APPLIED)
-  
-  // Timestamps — automatically managed by Prisma
+  email     String   @unique
+  role      String   // "recruiter" or "hiring_manager"
+  department String?
+  candidates Candidate[]     // one recruiter, many candidates
+  interviews Interview[]      // one recruiter, many interviews
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
-// Enum for stage — ensures only valid values
-enum Stage {
-  APPLIED
-  SCREENED
-  INTERVIEWED
-  OFFERED
-  REJECTED
+// Job Position
+model Job {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  department  String
+  salary      String?
+  status      String   @default("open")  // open, closed, filled
+  applications Application[]  // one job, many applications
+  createdAt   DateTime @default(now())
+}
+
+// Candidate
+model Candidate {
+  id                String   @id @default(cuid())
+  name              String
+  email             String   @unique
+  phone             String?
+  techStack         String?  @db.Text
+  yearsOfExperience Int?
+  linkedinUrl       String?
+  resumeUrl         String?
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  applications      Application[]  // one candidate, many applications
+  createdAt         DateTime @default(now())
+}
+
+// Job Application
+model Application {
+  id          String   @id @default(cuid())
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  jobId       String
+  job         Job      @relation(fields: [jobId], references: [id])
+  status      String   @default("applied")  // applied, rejected, interview, offer, hired
+  appliedDate DateTime @default(now())
+  interviews  Interview[]  // one application, many interviews
+}
+
+// Interview
+model Interview {
+  id            String   @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id])
+  userId        String  // interviewer
+  user          User    @relation(fields: [userId], references: [id])
+  date          DateTime
+  type          String  // "phone", "technical", "final"
+  duration      Int?    // in minutes
+  feedback      Feedback?  // one interview, one feedback
+  createdAt     DateTime @default(now())
+}
+
+// Interview Feedback
+model Feedback {
+  id        String   @id @default(cuid())
+  interviewId String @unique
+  interview Interview @relation(fields: [interviewId], references: [id])
+  rating    Int      // 1-5
+  notes     String?  @db.Text
+  verdict   String?  // "pass", "fail", "maybe"
+  createdAt DateTime @default(now())
 }
