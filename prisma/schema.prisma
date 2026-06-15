@@ -1,0 +1,47 @@
+// This tells Prisma we're using PostgreSQL
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// This generates the Prisma client we'll use in our code
+generator client {
+  provider = "prisma-client-js"
+}
+
+// The Candidate table — stores recruiter pipeline data
+model Candidate {
+  // Unique ID for each candidate (auto-generated)
+  id        String   @id @default(cuid())
+  
+  // Basic info
+  name      String
+  email     String   @unique  // No duplicate emails
+  role      String   // Job title they applied for
+  
+  // Tech skills as a comma-separated string
+  // @db.Text allows longer text than String
+  techStack String?  @db.Text  // ? means optional
+  
+  // Years of experience (nullable, some candidates may not provide)
+  yearsOfExperience Int?
+  
+  // Recruiter notes about this candidate
+  notes     String?  @db.Text
+  
+  // Pipeline stage — one of these values only
+  stage     Stage    @default(APPLIED)
+  
+  // Timestamps — automatically managed by Prisma
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Enum for stage — ensures only valid values
+enum Stage {
+  APPLIED
+  SCREENED
+  INTERVIEWED
+  OFFERED
+  REJECTED
+}
