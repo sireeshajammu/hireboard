@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "Stage" AS ENUM ('APPLIED', 'SCREENED', 'INTERVIEWED', 'OFFERED', 'REJECTED');
+
+-- AlterTable
+ALTER TABLE "Candidate" ADD COLUMN     "stage" "Stage" NOT NULL DEFAULT 'APPLIED';

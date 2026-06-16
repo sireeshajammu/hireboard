@@ -61,7 +61,7 @@ export const CandidateCard = ({
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-sm font-medium text-gray-900 truncate">{name}</h3>
-          <Badge variant={stage} />
+          <Badge variant={stage.toLowerCase() as any} />
         </div>
         <p className="text-xs text-gray-500 truncate mt-0.5">{role}</p>
         <p className="text-xs text-gray-400 truncate">{email}</p>
