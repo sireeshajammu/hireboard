@@ -87,7 +87,7 @@ export const PipelineBoard = () => {
 
       <div className="flex gap-4 overflow-x-auto pb-4">
         {stages.map((stage) => {
-          const stageCandidates = candidates.filter((c) => c.stage.toLowerCase() === stage.id)
+          const stageCandidates = candidates.filter((c) => c.stage?.toLowerCase() === stage.id)
 
           return (
             <div
