@@ -183,8 +183,9 @@ app.post('/api/candidates', async (req: any, res: any) => {
       include: { user: true }
     })
     res.json(candidate)
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create candidate' })
+  } catch (error: any) {
+    console.error('Candidate creation error:', error.message)
+    res.status(500).json({ error: error.message })
   }
 })
 
