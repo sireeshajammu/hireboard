@@ -7,15 +7,23 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum Stage {
+  APPLIED
+  SCREENED
+  INTERVIEWED
+  OFFERED
+  REJECTED
+}
+
 // Recruiter/Hiring Manager
 model User {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
-  role      String   // "recruiter" or "hiring_manager"
+  role      String
   department String?
-  candidates Candidate[]     // one recruiter, many candidates
-  interviews Interview[]      // one recruiter, many interviews
+  candidates Candidate[]
+  interviews Interview[]
   createdAt DateTime @default(now())
 }
 
@@ -26,8 +34,8 @@ model Job {
   description String?  @db.Text
   department  String
   salary      String?
-  status      String   @default("open")  // open, closed, filled
-  applications Application[]  // one job, many applications
+  status      String   @default("open")
+  applications Application[]
   createdAt   DateTime @default(now())
 }
 
@@ -41,9 +49,10 @@ model Candidate {
   yearsOfExperience Int?
   linkedinUrl       String?
   resumeUrl         String?
+  stage             Stage    @default(APPLIED)
   userId            String
   user              User     @relation(fields: [userId], references: [id])
-  applications      Application[]  // one candidate, many applications
+  applications      Application[]
   createdAt         DateTime @default(now())
 }
 
@@ -54,9 +63,9 @@ model Application {
   candidate   Candidate @relation(fields: [candidateId], references: [id])
   jobId       String
   job         Job      @relation(fields: [jobId], references: [id])
-  status      String   @default("applied")  // applied, rejected, interview, offer, hired
+  status      String   @default("applied")
   appliedDate DateTime @default(now())
-  interviews  Interview[]  // one application, many interviews
+  interviews  Interview[]
 }
 
 // Interview
@@ -64,12 +73,12 @@ model Interview {
   id            String   @id @default(cuid())
   applicationId String
   application   Application @relation(fields: [applicationId], references: [id])
-  userId        String  // interviewer
+  userId        String
   user          User    @relation(fields: [userId], references: [id])
   date          DateTime
-  type          String  // "phone", "technical", "final"
-  duration      Int?    // in minutes
-  feedback      Feedback?  // one interview, one feedback
+  type          String
+  duration      Int?
+  feedback      Feedback?
   createdAt     DateTime @default(now())
 }
 
@@ -78,8 +87,8 @@ model Feedback {
   id        String   @id @default(cuid())
   interviewId String @unique
   interview Interview @relation(fields: [interviewId], references: [id])
-  rating    Int      // 1-5
+  rating    Int
   notes     String?  @db.Text
-  verdict   String?  // "pass", "fail", "maybe"
+  verdict   String?
   createdAt DateTime @default(now())
 }
