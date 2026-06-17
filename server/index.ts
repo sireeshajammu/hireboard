@@ -84,7 +84,14 @@ app.delete('/api/users/:id', async (req: any, res: any) => {
 app.get('/api/jobs', async (req: any, res: any) => {
   try {
     const jobs = await prisma.job.findMany({
-      include: { applications: { include: { candidate: true } } }
+      include: { 
+        applications: { 
+          include: { 
+            candidate: true,
+            interviews: true
+          } 
+        } 
+      }
     })
     res.json(jobs)
   } catch (error) {
@@ -280,6 +287,19 @@ app.delete('/api/applications/:id', async (req: any, res: any) => {
     res.json({ message: 'Application deleted' })
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete application' })
+  }
+})
+
+// CREATE interview
+app.post('/api/interviews', async (req: any, res: any) => {
+  try {
+    const interview = await prisma.interview.create({
+      data: req.body
+    })
+    res.json(interview)
+  } catch (error: any) {
+    console.error('Interview creation error:', error.message)
+    res.status(500).json({ error: error.message })
   }
 })
 
