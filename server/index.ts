@@ -84,7 +84,7 @@ app.delete('/api/users/:id', async (req: any, res: any) => {
 app.get('/api/jobs', async (req: any, res: any) => {
   try {
     const jobs = await prisma.job.findMany({
-      include: { applications: true }
+      include: { applications: { include: { candidate: true } } }
     })
     res.json(jobs)
   } catch (error) {
