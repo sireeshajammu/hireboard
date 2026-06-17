@@ -303,6 +303,24 @@ app.post('/api/interviews', async (req: any, res: any) => {
   }
 })
 
+app.get('/api/interviews', async (req: any, res: any) => {
+  try {
+    const interviews = await prisma.interview.findMany({
+      include: {
+        application: {
+          include: {
+            candidate: true,
+            job: true
+          }
+        }
+      }
+    })
+    res.json(interviews)
+  } catch (error: any) {
+    console.error('Interview fetch error:', error.message)
+    res.status(500).json({ error: error.message })
+  }
+})
 // ==================== START SERVER ====================
 app.listen(PORT, () => {
   console.log(`✓ Server running on http://localhost:${PORT}`)
