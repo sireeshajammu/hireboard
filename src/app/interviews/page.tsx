@@ -41,7 +41,7 @@ export default function InterviewsPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/interviews')
+    fetch('https://hireboard-production-178c.up.railway.app/api/interviews')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch')
         return res.json()

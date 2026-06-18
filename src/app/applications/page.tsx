@@ -38,7 +38,7 @@ export default function ApplicationsPage() {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/jobs')
+      const response = await fetch('https://hireboard-production-178c.up.railway.app/api/jobs')
       const data = await response.json()
       setJobs(data)
       if (data.length > 0) setSelectedJobId(data[0].id)
@@ -58,7 +58,7 @@ export default function ApplicationsPage() {
     const appId = e.dataTransfer.getData('applicationId')
     
     try {
-      await fetch(`http://localhost:4000/api/applications/${appId}`, {
+      await fetch(`https://hireboard-production-178c.up.railway.app/api/applications/${appId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
@@ -77,7 +77,7 @@ export default function ApplicationsPage() {
     if (!interviewForm.date || !selectedAppId) return
 
     try {
-      await fetch('http://localhost:4000/api/interviews', {
+      await fetch('https://hireboard-production-178c.up.railway.app/api/interviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

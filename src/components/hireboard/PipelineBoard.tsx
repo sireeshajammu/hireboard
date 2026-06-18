@@ -33,7 +33,7 @@ export const PipelineBoard = () => {
 
   const fetchCandidates = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/candidates')
+      const response = await fetch('https://hireboard-production-178c.up.railway.app/api/candidates')
       const data = await response.json()
       setCandidates(data)
     } catch (error) {
@@ -46,7 +46,7 @@ export const PipelineBoard = () => {
   // Update candidate stage in API
   const moveCandidate = async (candidateId: string, newStage: Stage) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/candidates/${candidateId}`, {
+      const response = await fetch(`https://hireboard-production-178c.up.railway.app/api/candidates/${candidateId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ stage: newStage })

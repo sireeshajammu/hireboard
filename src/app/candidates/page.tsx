@@ -34,7 +34,7 @@ export default function CandidatesPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/candidates')
+    fetch('https://hireboard-production-178c.up.railway.app/api/candidates')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch')
         return res.json()

@@ -31,7 +31,7 @@ export default function JobsPage() {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/jobs')
+      const response = await fetch('https://hireboard-production-178c.up.railway.app/api/jobs')
       if (!response.ok) throw new Error('Failed to fetch jobs')
       const data = await response.json()
       setJobs(data)
@@ -56,7 +56,7 @@ export default function JobsPage() {
 
     setSubmitting(true)
     try {
-      const response = await fetch('http://localhost:4000/api/jobs', {
+      const response = await fetch('https://hireboard-production-178c.up.railway.app/api/jobs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -76,7 +76,7 @@ export default function JobsPage() {
 
   const handleDeleteJob = async (jobId: string) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/jobs/${jobId}`, { method: 'DELETE' })
+      const response = await fetch(`https://hireboard-production-178c.up.railway.app/api/jobs/${jobId}`, { method: 'DELETE' })
       if (!response.ok) throw new Error('Failed to delete job')
       setJobs(jobs.filter(j => j.id !== jobId))
     } catch (err) {

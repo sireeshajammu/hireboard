@@ -15,10 +15,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-      fetch('http://localhost:4000/api/jobs').then(r => r.json()),
-      fetch('http://localhost:4000/api/candidates').then(r => r.json()),
-      fetch('http://localhost:4000/api/interviews').then(r => r.json()),
-      fetch('http://localhost:4000/api/applications').then(r => r.json()),
+      fetch('https://hireboard-production-178c.up.railway.app/api/jobs').then(r => r.json()),
+      fetch('https://hireboard-production-178c.up.railway.app/api/candidates').then(r => r.json()),
+      fetch('https://hireboard-production-178c.up.railway.app/api/interviews').then(r => r.json()),
+      fetch('https://hireboard-production-178c.up.railway.app/api/applications').then(r => r.json()),
     ]).then(([jobs, candidates, interviews, applications]) => {
       setStats({
         totalJobs: jobs.length,
