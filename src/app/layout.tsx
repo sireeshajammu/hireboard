@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Sidebar from '@/components/hireboard/Sidebar'
+import SessionProvider from '@/components/SessionProvider'
+import MobileNav from '@/components/hireboard/MobileNav'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,12 +20,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex h-screen bg-gray-50">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto">
-            {children}
-          </main>
-        </div>
+        <SessionProvider session={null}>
+          <div className="flex h-screen bg-gray-50">
+            <div className="hidden md:block">
+              <Sidebar />
+            </div>
+            <div className="flex flex-col flex-1 overflow-hidden">
+              <div className="md:hidden">
+                <MobileNav />
+              </div>
+              <main className="flex-1 overflow-y-auto">
+                {children}
+              </main>
+            </div>
+          </div>
+        </SessionProvider>
       </body>
     </html>
   )

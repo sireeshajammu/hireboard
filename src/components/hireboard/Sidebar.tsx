@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { signOut, useSession } from 'next-auth/react'
 
 const navItems = [
   { label: 'Overview', href: '/', icon: '▦' },
@@ -12,6 +13,9 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { data: session } = useSession()
+
+  if (pathname === '/login') return null
 
   return (
     <aside
@@ -19,9 +23,7 @@ export default function Sidebar() {
       className="flex flex-col py-6 px-4 flex-shrink-0"
     >
       <div className="mb-8 px-2">
-        <h1 className="text-white text-xl font-bold tracking-tight">
-          ⬡ HireBoard
-        </h1>
+        <h1 className="text-white text-xl font-bold tracking-tight">⬡ HireBoard</h1>
         <p className="text-gray-500 text-xs mt-1">Recruitment Platform</p>
       </div>
 
@@ -49,17 +51,25 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto px-2">
-        <div className="flex items-center gap-3 py-3 border-t border-white/10">
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-            style={{ backgroundColor: '#6C63FF' }}
+        <div className="py-3 border-t border-white/10">
+          <div className="flex items-center gap-3 mb-3">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0"
+              style={{ backgroundColor: '#6C63FF' }}
+            >
+              {session?.user?.name?.split(' ').map(n => n[0]).join('') || 'SJ'}
+            </div>
+            <div className="min-w-0">
+              <p className="text-white text-sm font-medium truncate">{session?.user?.name || 'Sarah Johnson'}</p>
+              <p className="text-gray-500 text-xs truncate">{session?.user?.email || 'recruiter'}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="w-full text-left px-3 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg text-sm transition-colors"
           >
-            SJ
-          </div>
-          <div>
-            <p className="text-white text-sm font-medium">Sarah Johnson</p>
-            <p className="text-gray-500 text-xs">Recruiter</p>
-          </div>
+            → Sign out
+          </button>
         </div>
       </div>
     </aside>
